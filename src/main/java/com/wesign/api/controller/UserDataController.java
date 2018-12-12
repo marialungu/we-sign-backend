@@ -4,12 +4,17 @@ import com.asprise.ocr.Ocr;
 import com.wesign.api.dto.UserDataDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import sun.misc.BASE64Decoder;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -23,6 +28,7 @@ import java.util.stream.Collectors;
 public class UserDataController {
 
     private Ocr ocr;
+    public String base64image;
 
     @PostConstruct
     private void postConstruct(){
@@ -36,14 +42,34 @@ public class UserDataController {
         ocr.stopEngine();
     }
 
+//    @PostMapping("/get-id-photo")
+//    public String retrieveUserIdPhoto(@RequestBody String base64image){
+//       return this.base64image = base64image;
+//    }
 
-    @PostMapping("/user-data/")
+    @PostMapping("/get-id-photo")
     @ResponseBody
-    public UserDataDto retrieveUserData(MultipartFile file) throws IOException {
-        File image = File.createTempFile(file.getOriginalFilename(),".jpg");
-        file.transferTo(image);
+    public UserDataDto retrieveUserData(String base64image) throws IOException {
+        // tokenize the data
+        BufferedImage image = null;
+        byte[] imageByte;
+        try {
+            BASE64Decoder decoder = new BASE64Decoder();
+            imageByte = decoder.decodeBuffer(base64image);
+            ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
+            image = ImageIO.read(bis);
+            bis.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        String s = ocr.recognize(new File[] {image},
+        // write the image to a file
+        File outputfile = new File("image.jpg");
+        ImageIO.write(image, "jpg", outputfile);
+//        File idImage = File.createTempFile(file.getOriginalFilename(),".jpg");
+//        file.transferTo(idImage);
+
+        String s = ocr.recognize(new File[] {outputfile},
                 Ocr.RECOGNIZE_TYPE_TEXT, Ocr.OUTPUT_FORMAT_PLAINTEXT);
 
         log.info("Recognized \n{}",s);
