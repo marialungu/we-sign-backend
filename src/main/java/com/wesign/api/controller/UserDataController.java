@@ -46,7 +46,7 @@ public class UserDataController {
     @PostMapping("/user-data/")
     @ResponseBody
     public UserDataDto retrieveUserData(MultipartFile ionicfile) throws IOException {
-        log.info("Received {} - {}",ionicfile.getOriginalFilename(), ionicfile.getContentType());
+//        log.info("Received {} - {}",ionicfile.getOriginalFilename(), ionicfile.getContentType());
         File image = File.createTempFile(ionicfile.getOriginalFilename(),".jpg");
         ionicfile.transferTo(image);
 
@@ -66,22 +66,14 @@ public class UserDataController {
             StringJoiner sj = new StringJoiner(" ");
             String lastName = Arrays.stream(lastNameParts).collect(Collectors.joining(" "));
 
-            String[] seriesSub = subParts[1].split("<");
+            String[] seriesSub = subParts[2].split("<");
             String series = seriesSub[0];
-
-            Pattern p = Pattern.compile("([0-9].)");
-            Matcher m = p.matcher(s);
-            String cnp = "";
-            if (m.find()) {
-                cnp = m.group(0);
-            }
 
 
             userDataDto.setFirstname(firstName);
             userDataDto.setLastName(lastName);
-            userDataDto.setSeries(series.substring(1, 3));
-            userDataDto.setNumber(series.substring(3, 8));
-            userDataDto.setCnp(cnp);
+            userDataDto.setSeries(series.substring(4, 6));
+            userDataDto.setNumber(series.substring(6, 12));
         }
 
         return userDataDto;
