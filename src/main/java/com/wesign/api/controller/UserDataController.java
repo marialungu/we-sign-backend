@@ -8,13 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Decoder;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -42,34 +38,19 @@ public class UserDataController {
         ocr.stopEngine();
     }
 
-//    @PostMapping("/get-id-photo")
-//    public String retrieveUserIdPhoto(@RequestBody String base64image){
-//       return this.base64image = base64image;
-//    }
-
     @PostMapping("/get-id-photo")
+    public String retrieveUserIdPhoto(@RequestBody String base64image){
+       return this.base64image = base64image;
+    }
+
+    @PostMapping("/user-data/")
     @ResponseBody
-    public UserDataDto retrieveUserData(String base64image) throws IOException {
-        // tokenize the data
-        BufferedImage image = null;
-        byte[] imageByte;
-        try {
-            BASE64Decoder decoder = new BASE64Decoder();
-            imageByte = decoder.decodeBuffer(base64image);
-            ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
-            image = ImageIO.read(bis);
-            bis.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public UserDataDto retrieveUserData(MultipartFile ionicfile) throws IOException {
+        log.info("Received {} - {}",ionicfile.getOriginalFilename(), ionicfile.getContentType());
+        File image = File.createTempFile(ionicfile.getOriginalFilename(),".jpg");
+        ionicfile.transferTo(image);
 
-        // write the image to a file
-        File outputfile = new File("image.jpg");
-        ImageIO.write(image, "jpg", outputfile);
-//        File idImage = File.createTempFile(file.getOriginalFilename(),".jpg");
-//        file.transferTo(idImage);
-
-        String s = ocr.recognize(new File[] {outputfile},
+        String s = ocr.recognize(new File[] {image},
                 Ocr.RECOGNIZE_TYPE_TEXT, Ocr.OUTPUT_FORMAT_PLAINTEXT);
 
         log.info("Recognized \n{}",s);
