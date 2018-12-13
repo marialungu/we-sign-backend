@@ -59,7 +59,7 @@ public class UserDataController {
 
         String[] parts = s.split("IDRO");
         if (parts.length > 1){
-            String[] subParts = parts[1].split("<<<<<<<");
+            String[] subParts = parts[1].split("<<<");
             String[] nameParts = subParts[0].split("<<");
             String firstName = nameParts[0].substring(1, nameParts[0].length());
             String[] lastNameParts = nameParts[1].split("<");
