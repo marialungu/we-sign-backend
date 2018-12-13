@@ -39,14 +39,8 @@ public class UserDataController {
     }
 
     @PostMapping("/get-id-photo")
-    public String retrieveUserIdPhoto(@RequestBody String base64image){
-       return this.base64image = base64image;
-    }
-
-    @PostMapping("/user-data/")
     @ResponseBody
     public UserDataDto retrieveUserData(MultipartFile ionicfile) throws IOException {
-//        log.info("Received {} - {}",ionicfile.getOriginalFilename(), ionicfile.getContentType());
         File image = File.createTempFile(ionicfile.getOriginalFilename(),".jpg");
         ionicfile.transferTo(image);
 
@@ -57,26 +51,48 @@ public class UserDataController {
 
         UserDataDto userDataDto = new UserDataDto();
 
-        String[] parts = s.split("IDRO");
-        if (parts.length > 1){
-            String[] subParts = parts[1].split("<<<");
-            String[] nameParts = subParts[0].split("<<");
-            String firstName = nameParts[0].substring(1, nameParts[0].length());
-            String[] lastNameParts = nameParts[1].split("<");
-            StringJoiner sj = new StringJoiner(" ");
-            String lastName = Arrays.stream(lastNameParts).collect(Collectors.joining(" "));
-
-            String[] seriesSub = subParts[2].split("<");
-            String series = seriesSub[0];
-
-
-            userDataDto.setFirstname(firstName);
-            userDataDto.setLastName(lastName);
-            userDataDto.setSeries(series.substring(4, 6));
-            userDataDto.setNumber(series.substring(6, 12));
-        }
+        setUserData(s, userDataDto);
 
         return userDataDto;
 
+    }
+
+    private void setUserData(String s, UserDataDto dto){
+        String firstName="", lastName="", series="", number="";
+        Pattern p = Pattern.compile("IDRO[UM]([A-Za-z0-9]+)[< ]+(.+)[<]+.+[\\n\\r ](.+)[<]");
+        Matcher m = p.matcher(s);
+        if (m.find()){
+            try{
+                firstName = m.group(1);
+            }
+            catch (Exception e){
+                log.info("failed to match firstnme");
+            }
+
+            try{
+                lastName = m.group(2);
+                lastName = lastName.replace("<"," ").trim();
+            }
+            catch (Exception e){
+                log.info("failed to match firstnme");
+            }
+
+            try{
+                String seriesParts = m.group(3);
+                if (seriesParts.length() > 3){
+                    series = seriesParts.substring(0,2);
+                    number = seriesParts.substring(2,seriesParts.length());
+                }
+            }
+            catch (Exception e){
+                log.info("failed to match series");
+            }
+
+            log.info("{} {} {} {}", firstName, lastName, series, number);
+            dto.setFirstname(firstName);
+            dto.setLastName(lastName);
+            dto.setNumber(number);
+            dto.setSeries(series);
+        }
     }
 }
