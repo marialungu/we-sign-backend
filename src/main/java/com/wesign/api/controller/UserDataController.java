@@ -59,7 +59,7 @@ public class UserDataController {
 
     private void setUserData(String s, UserDataDto dto){
         String firstName="", lastName="", series="", number="";
-        Pattern p = Pattern.compile("IDRO[UM]([A-Za-z0-9]+)[< ]+(.+)[<]+.+[\\n\\r ](.+)[<]");
+        Pattern p = Pattern.compile("[I ][D ][R ][OQ ][UM]([A-Za-z0-9]+)[< ]+(.+)[<]+.+[\\n\\r ](.+)[<]");
         Matcher m = p.matcher(s);
         if (m.find()){
             try{
