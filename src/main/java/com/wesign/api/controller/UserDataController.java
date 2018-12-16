@@ -42,8 +42,8 @@ public class UserDataController {
     private static final String uriBaseSelfie =
             "https://westeurope.api.cognitive.microsoft.com/face/v1.0/verify";
     private static final String faceAttributes = "age,gender";
-    private List<String> imageIds = new ArrayList<>();
-    private List<String> imageSelfies = new ArrayList<>();
+    private String imageIds;
+    private String imageSelfies;
 
     private Ocr ocr;
     public String base64image;
@@ -78,7 +78,7 @@ public class UserDataController {
         //detect face for face recognition
         try {
             String faceId = getFaceFromId(image);
-            this.imageIds.add(faceId);
+            this.imageIds = faceId;
             userDataDto.setIdImage(faceId);
         } catch (URISyntaxException e) {
             log.warn("Failed to extract face id");
@@ -98,7 +98,7 @@ public class UserDataController {
         //detect face for face recognition
         try {
             String faceId = getFaceFromId(image);
-            this.imageSelfies.add(faceId);
+            this.imageSelfies = faceId;
         } catch (URISyntaxException e) {
             log.warn("Failed to extract face id");
             e.printStackTrace();
@@ -115,8 +115,8 @@ public class UserDataController {
 
     private boolean getFaceRecognition() throws URISyntaxException, IOException {
         StringEntity body = new StringEntity("{" +
-                "\"faceId1\"" + ":" + "\"" + this.imageIds.get(0) + "\"" + "," +
-                "\"faceId2\"" + ":" +  "\"" + this.imageSelfies.get(0) + "\"" + "}" , ContentType.APPLICATION_JSON);
+                "\"faceId1\"" + ":" + "\"" + this.imageIds + "\"" + "," +
+                "\"faceId2\"" + ":" +  "\"" + this.imageSelfies + "\"" + "}" , ContentType.APPLICATION_JSON);
         HttpClient httpclient = new DefaultHttpClient();
 
         URIBuilder builder = new URIBuilder(uriBaseSelfie);
