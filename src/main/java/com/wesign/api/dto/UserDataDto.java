@@ -15,4 +15,5 @@ public class UserDataDto {
     private String lastName;
     private String series;
     private String number;
+    private String idImage;
 }
