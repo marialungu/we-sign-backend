@@ -80,7 +80,6 @@ public class UserDataController {
             String faceId = getFaceFromId(image);
             this.imageIds.add(faceId);
             userDataDto.setIdImage(faceId);
-            System.out.println(this.imageIds.get(0));
         } catch (URISyntaxException e) {
             log.warn("Failed to extract face id");
             e.printStackTrace();
@@ -148,6 +147,7 @@ public class UserDataController {
             Boolean isIdentical = Boolean.parseBoolean(jsonObject.get("isIdentical").toString());
             Double confidence = Double.parseDouble(jsonObject.get("confidence").toString());
 
+            System.out.println(isIdentical && confidence > 0.6);
             return isIdentical && confidence > 0.6;
         }
 
