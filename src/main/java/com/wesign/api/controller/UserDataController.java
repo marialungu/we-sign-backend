@@ -147,8 +147,8 @@ public class UserDataController {
             Boolean isIdentical = Boolean.parseBoolean(jsonObject.get("isIdentical").toString());
             Double confidence = Double.parseDouble(jsonObject.get("confidence").toString());
 
-            System.out.println(isIdentical && confidence > 0.6);
-            return isIdentical && confidence > 0.6;
+            System.out.println(isIdentical);
+            return isIdentical;
         }
 
        return false;
