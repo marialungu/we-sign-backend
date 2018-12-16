@@ -148,6 +148,7 @@ public class UserDataController {
             Double confidence = Double.parseDouble(jsonObject.get("confidence").toString());
 
             System.out.println(isIdentical);
+            System.out.println(confidence);
             return isIdentical;
         }
 
